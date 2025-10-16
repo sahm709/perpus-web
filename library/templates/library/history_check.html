@@ -1,0 +1,71 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1>Cek Riwayat Kunjungan</h1>
+<p>Masukkan nama dan kelas siswa untuk melihat riwayat kunjungan dan peminjaman.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+        <input type="text" name="{{ form.name.name }}" class="form-control" id="{{ form.name.id_for_label }}" value="{{ form.name.value|default:'' }}" required>
+        {% if form.name.errors %}<div class="text-danger">{{ form.name.errors }}</div>{% endif %}
+    </div>
+    <div class="mb-3">
+        <label for="{{ form.grade.id_for_label }}" class="form-label">{{ form.grade.label }}</label>
+        <input type="text" name="{{ form.grade.name }}" class="form-control" id="{{ form.grade.id_for_label }}" value="{{ form.grade.value|default:'' }}" required>
+        {% if form.grade.errors %}<div class="text-danger">{{ form.grade.errors }}</div>{% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Cek Riwayat</button>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Kembali</a>
+</form>
+
+{% if student %}
+    <h2 class="mt-4">Riwayat untuk {{ student.name }} (Kelas {{ student.grade }})</h2>
+    <h3>Riwayat Kunjungan:</h3>
+    {% if visits %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Buku Dibaca</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for visit in visits %}
+                <tr>
+                    <td>{{ visit.visit_date|date:"d M Y" }}</td>
+                    <td>{{ visit.book_read }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Tidak ada riwayat kunjungan.</p>
+    {% endif %}
+
+    <h3>Riwayat Peminjaman:</h3>
+    {% if borrowings %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tanggal Peminjaman</th>
+                    <th>Buku</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for borrowing in borrowings %}
+                <tr>
+                    <td>{{ borrowing.borrow_date|date:"d M Y" }}</td>
+                    <td>{{ borrowing.book.title|default:borrowing.book_manual }}</td>
+                    <td>{{ borrowing.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Tidak ada riwayat peminjaman.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

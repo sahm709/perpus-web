@@ -1,0 +1,62 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1>Selamat Datang di Perpustakaan Digital</h1>
+<p>Pilih fitur di bawah ini untuk memulai.</p>
+
+<div class="row mt-4">
+    <!-- Baris 1: 3 kotak -->
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-book fs-1"></i>  <!-- Ikon buku -->
+                <h5 class="card-title">Catat Kunjungan</h5>
+                <p class="card-text">Rekam kunjungan Anda ke perpustakaan.</p>
+                <a href="{% url 'record_visit' %}" class="btn btn-primary">Kunjungi</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-search fs-1"></i>  <!-- Ikon pencarian -->
+                <h5 class="card-title">Lihat Katalog</h5>
+                <p class="card-text">Cari dan lihat daftar buku tersedia.</p>
+                <a href="{% url 'catalog_search' %}" class="btn btn-primary">Kunjungi</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-clock-history fs-1"></i>  <!-- Ikon riwayat -->
+                <h5 class="card-title">Cek Riwayat</h5>
+                <p class="card-text">Lihat riwayat kunjungan dan peminjaman Anda.</p>
+                <a href="{% url 'history_check' %}" class="btn btn-primary">Kunjungi</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Baris 2: 2 kotak -->
+    <div class="col-md-6 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-download fs-1"></i>  <!-- Ikon pinjam -->
+                <h5 class="card-title">Ajukan Peminjaman</h5>
+                <p class="card-text">Ajukan peminjaman buku yang diinginkan.</p>
+                <a href="{% url 'borrow_request' %}" class="btn btn-primary">Kunjungi</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-upload fs-1"></i>  <!-- Ikon kembalikan -->
+                <h5 class="card-title">Ajukan Pengembalian</h5>
+                <p class="card-text">Ajukan pengembalian buku yang dipinjam.</p>
+                <a href="{% url 'return_request' %}" class="btn btn-primary">Kunjungi</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

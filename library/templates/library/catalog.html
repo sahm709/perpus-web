@@ -1,0 +1,38 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1>Katalog Buku</h1>
+<form method="get" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Cari judul atau pengarang..." value="{{ query }}">
+        <button class="btn btn-outline-secondary" type="submit">Cari</button>
+    </div>
+</form>
+
+{% if books %}
+<div class="row">
+    {% for book in books %}
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <p class="card-text">Pengarang: {{ book.author }}</p>
+                <p class="text-{% if book.is_available %}success{% else %}danger{% endif %}">
+                    Status: {% if book.is_available %}Tersedia{% else %}Dipinjam{% endif %}
+                </p>
+                <small>Ditambahkan: {{ book.added_date|date:"d M Y" }}</small>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Tidak ada buku yang ditemukan untuk "{{ query }}".</p>
+    {% endfor %}
+</div>
+{% else %}
+<p>Tidak ada buku di katalog.</p>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary">Kembali ke Beranda</a>
+</div>
+{% endblock %}

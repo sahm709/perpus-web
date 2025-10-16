@@ -1,0 +1,32 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1>Ajukan Peminjaman Buku</h1>
+<p>Silakan isi data untuk mengajukan peminjaman. Pilih buku dari katalog jika ada, atau tulis manual.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+        <input type="text" name="{{ form.name.name }}" class="form-control" id="{{ form.name.id_for_label }}" value="{{ form.name.value|default:'' }}" required>
+        {% if form.name.errors %}<div class="text-danger">{{ form.name.errors }}</div>{% endif %}
+    </div>
+    <div class="mb-3">
+        <label for="{{ form.grade.id_for_label }}" class="form-label">{{ form.grade.label }}</label>
+        <input type="text" name="{{ form.grade.name }}" class="form-control" id="{{ form.grade.id_for_label }}" value="{{ form.grade.value|default:'' }}" required>
+        {% if form.grade.errors %}<div class="text-danger">{{ form.grade.errors }}</div>{% endif %}
+    </div>
+    <div class="mb-3">
+        <label for="{{ form.book.id_for_label }}" class="form-label">{{ form.book.label }}</label>
+        {{ form.book }}
+        {% if form.book.errors %}<div class="text-danger">{{ form.book.errors }}</div>{% endif %}
+    </div>
+    <div class="mb-3">
+        <label for="{{ form.book_manual.id_for_label }}" class="form-label">{{ form.book_manual.label }}</label>
+        <input type="text" name="{{ form.book_manual.name }}" class="form-control" id="{{ form.book_manual.id_for_label }}" value="{{ form.book_manual.value|default:'' }}">
+        {% if form.book_manual.errors %}<div class="text-danger">{{ form.book_manual.errors }}</div>{% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Ajukan Peminjaman</button>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}

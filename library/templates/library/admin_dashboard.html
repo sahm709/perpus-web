@@ -1,0 +1,56 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1>Dashboard Admin</h1>
+<h2>Peminjaman Pending</h2>
+{% if pending_borrowings %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Siswa</th>
+            <th>Buku</th>
+            <th>Tanggal</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for borrowing in pending_borrowings %}
+        <tr>
+            <td>{{ borrowing.student.name }}</td>
+            <td>{{ borrowing.book.title|default:borrowing.book_manual }}</td>
+            <td>{{ borrowing.borrow_date }}</td>
+            <td><a href="{% url 'verify_borrowing' borrowing.id %}" class="btn btn-primary">Verifikasi</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Tidak ada peminjaman pending.</p>
+{% endif %}
+
+<h2>Pengembalian Pending</h2>
+{% if pending_returns %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Siswa</th>
+            <th>Buku</th>
+            <th>Tanggal</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for return_item in pending_returns %}
+        <tr>
+            <td>{{ return_item.student.name }}</td>
+            <td>{{ return_item.book.title|default:return_item.book_manual }}</td>
+            <td>{{ return_item.borrow_date }}</td>
+            <td><a href="{% url 'verify_borrowing' return_item.id %}" class="btn btn-success">Setujui Pengembalian</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Tidak ada pengembalian pending.</p>
+{% endif %}
+{% endblock %}

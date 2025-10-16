@@ -1,0 +1,12 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1>Ajukan Pengembalian Buku</h1>
+<p>Silakan isi ID peminjaman dari riwayat Anda.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Ajukan Pengembalian</button>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}
