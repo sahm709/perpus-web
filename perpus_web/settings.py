@@ -26,8 +26,10 @@ SECRET_KEY = 'django-insecure-1w3-g#+b^7!a+3upgu%q^qoq@mw#n($evj!&1y*=-2l%ku7kq*
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS= [""]
-
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',  # Untuk development lokal
+    'https://perpus-jb03.up.railway.app',  # Ganti dengan domain production kamu (misalnya, https://yourapp.railway.app)
+]
 
 # Application definition
 
