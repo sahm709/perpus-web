@@ -19,7 +19,7 @@
             <td>{{ borrowing.student.name }}</td>
             <td>{{ borrowing.book.title|default:borrowing.book_manual }}</td>
             <td>{{ borrowing.borrow_date }}</td>
-            <td><a href="{% url 'verify_borrowing' borrowing.id %}" class="btn btn-primary">Verifikasi</a></td>
+        <a href="{% url 'verify_borrowing' borrowing.id %}" class="btn btn-primary">Verifikasi Peminjaman</a>
         </tr>
         {% endfor %}
     </tbody>
@@ -39,17 +39,20 @@
             <th>Aksi</th>
         </tr>
     </thead>
-    <tbody>
-        {% for return_item in pending_returns %}
-        <tr>
-            <td>{{ return_item.student.name }}</td>
-            <td>{{ return_item.book.title|default:return_item.book_manual }}</td>
-            <td>{{ return_item.borrow_date }}</td>
-            <td><a href="{% url 'verify_borrowing' return_item.id %}" class="btn btn-success">Setujui Pengembalian</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    </table>
+        {% for borrowing in pending_returns %}
+    <div>
+        <p>{{ borrowing.student.name }} - {{ borrowing.book.title|default:borrowing.book_manual }} - Status: {{ borrowing.status }}</p>
+        {% if borrowing.id and borrowing.status == 'pending_return' %}
+            <a href="{% url 'verify_return' borrowing.id %}" class="btn btn-warning">Verifikasi Pengembalian</a>
+        {% elif borrowing.id %}
+            <p class="text-info">Borrowing ini sudah tidak bisa diverifikasi (status: {{ borrowing.status }})</p>
+        {% else %}
+            <p class="text-danger">ID tidak tersedia untuk verifikasi.</p>
+        {% endif %}
+    </div>
+{% endfor %}
+
 {% else %}
 <p>Tidak ada pengembalian pending.</p>
 {% endif %}

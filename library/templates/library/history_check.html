@@ -24,25 +24,36 @@
     <h2 class="mt-4">Riwayat untuk {{ student.name }} (Kelas {{ student.grade }})</h2>
     <h3>Riwayat Kunjungan:</h3>
     {% if visits %}
+    <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Tanggal</th>
-                    <th>Buku Dibaca</th>
+                    <th>Tanggal Kunjungan</th>
+                    <th>Buku yang Dibaca</th>
                 </tr>
             </thead>
             <tbody>
                 {% for visit in visits %}
                 <tr>
                     <td>{{ visit.visit_date|date:"d M Y" }}</td>
-                    <td>{{ visit.book_read }}</td>
+                    <td>
+                        {% if visit.book %}
+                            {{ visit.book.title }}  <!-- Tampilkan judul dari DB -->
+                        {% else %}
+                            {{ visit.book_read_manual }}  <!-- Tampilkan manual jika ada -->
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-    {% else %}
-        <p>Tidak ada riwayat kunjungan.</p>
-    {% endif %}
+    </div>
+    <p class="text-muted">Total kunjungan: {{ visits.count }} kali.</p>
+{% else %}
+    <div class="alert alert-info">
+        <p>Tidak ada riwayat kunjungan untuk siswa ini.</p>
+    </div>
+{% endif %}
 
     <h3>Riwayat Peminjaman:</h3>
     {% if borrowings %}

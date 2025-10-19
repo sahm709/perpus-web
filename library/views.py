@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseBadRequest 
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -16,16 +17,30 @@ def catalog_search(request):
     books = Book.objects.all()
     if query:
         books = books.filter(Q(title__icontains=query) | Q(author__icontains=query))
+    books = books.order_by('-is_recommended', '-added_date')  # -is_recommended: True dulu
     return render(request, 'library/catalog.html', {'books': books, 'query': query})
 
 def record_visit(request):
     if request.method == 'POST':
         form = VisitRecordForm(request.POST)
         if form.is_valid():
-            student, created = Student.objects.get_or_create(name=form.cleaned_data['name'], grade=form.cleaned_data['grade'])
-            Visit.objects.create(student=student, book_read=form.cleaned_data['book_read'])
-            messages.success(request, 'Kunjungan tercatat!')
+            name = form.cleaned_data['name']
+            grade = form.cleaned_data['grade']
+            book = form.cleaned_data.get('book')  # Bisa None
+            book_read_manual = form.cleaned_data.get('book_read_manual')  # Bisa kosong
+            
+            student, created = Student.objects.get_or_create(name=name, grade=grade)
+            
+            visit = Visit.objects.create(
+                student=student,
+                book=book,  # Simpan ForeignKey jika dipilih
+                book_read_manual=book_read_manual  # Simpan manual jika diisi
+            )
+            
+            messages.success(request, f'Kunjungan untuk {name} tercatat! Buku: {visit.book.title if visit.book else visit.book_read_manual}.')
             return redirect('home')
+        else:
+            messages.error(request, 'Mohon isi form dengan benar.')
     else:
         form = VisitRecordForm()
     return render(request, 'library/record_visit.html', {'form': form})
@@ -63,14 +78,38 @@ def return_request(request):
     if request.method == 'POST':
         form = ReturnRequestForm(request.POST)
         if form.is_valid():
-            borrowing = Borrowing.objects.get(id=form.cleaned_data['borrowing_id'])
-            borrowing.status = 'pending_return'
-            borrowing.save()
-            messages.success(request, 'Pengajuan pengembalian berhasil!')
-            return redirect('home')
-    else:
+            name = form.cleaned_data['name']
+            grade = form.cleaned_data['grade']
+            book = form.cleaned_data.get('book')
+            book_manual = form.cleaned_data.get('book_manual')
+            
+            try:
+                student = Student.objects.get(name=name, grade=grade)
+                if book:
+                    borrowing = Borrowing.objects.filter(student=student, book=book, status='approved').first()
+                elif book_manual:
+                    borrowing = Borrowing.objects.filter(student=student, book_manual=book_manual, status='approved').first()
+                else:
+                    messages.error(request, 'Buku tidak ditemukan.')
+                    return render(request, 'library/return_request.html', {'form': form})  # Pastikan return di sini
+                
+                if borrowing:
+                    borrowing.status = 'pending_return'
+                    borrowing.save()
+                    messages.success(request, 'Pengajuan pengembalian berhasil!')
+                    return redirect('home')
+                else:
+                    messages.error(request, 'Tidak ada peminjaman yang sesuai.')
+                    return render(request, 'library/return_request.html', {'form': form})  # Pastikan return di sini
+            except Student.DoesNotExist:
+                messages.error(request, 'Siswa tidak ditemukan.')
+                return render(request, 'library/return_request.html', {'form': form})  # Pastikan return di sini
+        else:
+            messages.error(request, 'Form tidak valid.')
+            return render(request, 'library/return_request.html', {'form': form})  # Pastikan return di sini
+    else:  # Untuk GET request
         form = ReturnRequestForm()
-    return render(request, 'library/return_request.html', {'form': form})
+        return render(request, 'library/return_request.html', {'form': form})  # Pastikan return di sini
 
 @login_required
 def admin_dashboard(request):
@@ -86,3 +125,19 @@ def verify_borrowing(request, borrowing_id):
         borrowing.save()
         return redirect('admin_dashboard')
     return render(request, 'library/verify_borrowing.html', {'borrowing': borrowing})
+
+@login_required
+def verify_return(request, borrowing_id):
+    try:
+        borrowing = Borrowing.objects.get(id=borrowing_id, status='pending_return')
+    except Borrowing.DoesNotExist:
+        messages.error(request, 'Borrowing dengan ID tersebut tidak ditemukan atau statusnya bukan pending return.')
+        return redirect('admin_dashboard')
+    
+    if request.method == 'POST':
+        borrowing.status = 'returned'
+        borrowing.return_date = timezone.now()
+        borrowing.save()
+        messages.success(request, 'Pengembalian disetujui!')
+        return redirect('admin_dashboard')
+    return render(request, 'library/verify_return.html', {'borrowing': borrowing})

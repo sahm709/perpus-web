@@ -11,4 +11,5 @@ urlpatterns = [
     path('return/', views.return_request, name='return_request'),
     path('admin-panel/dashboard/', login_required(views.admin_dashboard), name='admin_dashboard'),
     path('admin-panel/verify/<int:borrowing_id>/', login_required(views.verify_borrowing), name='verify_borrowing'),
+    path('admin-panel/verify-return/<int:borrowing_id>/', login_required(views.verify_return), name='verify_return'),
 ]

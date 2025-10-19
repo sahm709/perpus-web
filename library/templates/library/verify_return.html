@@ -1,18 +1,19 @@
 {% extends 'library/base.html' %}
 
 {% block content %}
-<h1>Verifikasi Peminjaman</h1>
-<p>Detail peminjaman yang akan diverifikasi:</p>
+<h1>Verifikasi Pengembalian Buku</h1>
+<p>Detail pengembalian yang akan diverifikasi:</p>
 <ul>
     <li><strong>Siswa:</strong> {{ borrowing.student.name }} (Kelas: {{ borrowing.student.grade }})</li>
     <li><strong>Buku:</strong> {{ borrowing.book.title|default:borrowing.book_manual }}</li>
     <li><strong>Status:</strong> {{ borrowing.status }}</li>
     <li><strong>Tanggal Pinjam:</strong> {{ borrowing.borrow_date }}</li>
+    <li><strong>Tanggal Pengembalian Diajukan:</strong> {{ borrowing.return_date|default:'Belum disetel' }}</li>
 </ul>
 
 <form method="post">
     {% csrf_token %}
-    <button type="submit" class="btn btn-success">Setujui Peminjaman</button>
+    <button type="submit" class="btn btn-success">Setujui Pengembalian</button>
     <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Batal</a>
 </form>
 {% endblock %}
