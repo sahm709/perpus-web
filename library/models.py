@@ -43,3 +43,30 @@ class Borrowing(models.Model):
             return f"{self.student} meminjam {self.book} - {self.status}"
         else:
             return f"{self.student} meminjam {self.book_manual} - {self.status}"
+
+class BookRequest(models.Model):
+    REQUEST_TYPE_CHOICES = [
+        ('student', 'Murid'),
+        ('parent', 'Orang Tua'),
+    ]
+    
+    request_type = models.CharField(max_length=10, choices=REQUEST_TYPE_CHOICES, verbose_name="Tipe Request")
+    # Field untuk murid
+    student_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Nama Murid")
+    class_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Kelas")
+    
+    # Field untuk orang tua
+    parent_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Nama Orang Tua")
+    child_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Nama Anak")
+    child_class = models.CharField(max_length=50, blank=True, null=True, verbose_name="Kelas Anak")
+    
+    # Field umum
+    book_title_or_type = models.CharField(max_length=200, verbose_name="Judul Buku atau Jenis Buku yang Direquest")
+    submitted_at = models.DateTimeField(auto_now_add=True, verbose_name="Waktu Submit")
+    
+    def __str__(self):
+        if self.request_type == 'student':
+            return f"Request dari {self.student_name} (Murid, Kelas {self.class_name}): {self.book_title_or_type}"
+        elif self.request_type == 'parent':
+            return f"Request dari {self.parent_name} (Orang Tua, Anak: {self.child_name}, Kelas {self.child_class}): {self.book_title_or_type}"
+        return f"Request: {self.book_title_or_type}"

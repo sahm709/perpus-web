@@ -20,7 +20,6 @@
                 <p class="text-{% if book.is_available %}success{% else %}danger{% endif %}">
                     Status: {% if book.is_available %}Tersedia{% else %}Dipinjam{% endif %}
                 </p>
-                <small>Ditambahkan: {{ book.added_date|date:"d M Y" }}</small>
             </div>
         </div>
     </div>
