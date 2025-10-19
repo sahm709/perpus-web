@@ -37,8 +37,8 @@ else:
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'perpus-web-production.up.railway.app']
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',  # Untuk development lokal
-    'https://perpus-web-production.up.railway.app',  # Ganti dengan domain production kamu (misalnya, https://yourapp.railway.app)
+    'http://localhost:8000',  
+    'https://perpus-web-production.up.railway.app',  
 ]
 
 # Application definition
