@@ -29,6 +29,7 @@ SECRET_KEY = 'django-insecure-1w3-g#+b^7!a+3upgu%q^qoq@mw#n($evj!&1y*=-2l%ku7kq*
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',  # Untuk development lokal
     'https://perpus-jb03.up.railway.app',  # Ganti dengan domain production kamu (misalnya, https://yourapp.railway.app)
@@ -82,7 +83,7 @@ WSGI_APPLICATION = 'perpus_web.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DB_LIVE = os.getenv("DB_LIVE")
+DB_LIVE = os.environ.get("DB_LIVE")
 
 if DB_LIVE in ["False", False]:
     DATABASES = {
@@ -95,11 +96,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("DB_NAME"),
-            'USER': os.getenv("DB_USER"),
-            'PASSWORD': os.getenv("DB_PASSWORD"),
-            'HOST': os.getenv("DB_HOST"),
-            'PORT': os.getenv("DB_PORT"),
+            'NAME': os.environ.get("DB_NAME"),
+            'USER': os.environ.get("DB_USER"),
+            'PASSWORD': os.environ.get("DB_PASSWORD"),
+            'HOST': os.environ.get("DB_HOST"),
+            'PORT': os.environ.get("DB_PORT"),
         }
     }
 
