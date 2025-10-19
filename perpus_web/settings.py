@@ -34,11 +34,11 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'perpus-web-production.up.railway.app']
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',  # Untuk development lokal
-    'https://perpus-jb03.up.railway.app',  # Ganti dengan domain production kamu (misalnya, https://yourapp.railway.app)
+    'https://perpus-web-production.up.railway.app',  # Ganti dengan domain production kamu (misalnya, https://yourapp.railway.app)
 ]
 
 # Application definition
