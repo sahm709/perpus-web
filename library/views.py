@@ -25,29 +25,47 @@ def catalog_search(request):
 
 def record_visit(request):
     if request.method == 'POST':
-        form = VisitRecordForm(request.POST)
+        # Clean POST data sebelum masuk ke form
+        post_data = request.POST.copy()
+        book_value = post_data.get('book', '').strip()
+        
+        # Jika book bukan angka (ID), set ke kosong
+        if not book_value.isdigit():
+            post_data['book'] = ''
+        
+        form = VisitRecordForm(post_data)
+        
         if form.is_valid():
             name = form.cleaned_data['name']
             grade = form.cleaned_data['grade']
-            book = form.cleaned_data.get('book')  # Bisa None
-            book_read_manual = form.cleaned_data.get('book_read_manual')  # Bisa kosong
+            book = form.cleaned_data.get('book')
+            book_read_manual = form.cleaned_data.get('book_read_manual', '').strip()
             
-            student, created = Student.objects.get_or_create(name=name, grade=grade)
+            student, created = Student.objects.get_or_create(
+                name=name, 
+                defaults={'grade': grade}
+            )
+            
+            if not created and student.grade != grade:
+                student.grade = grade
+                student.save()
             
             visit = Visit.objects.create(
                 student=student,
-                book=book,  # Simpan ForeignKey jika dipilih
-                book_read_manual=book_read_manual  # Simpan manual jika diisi
+                book=book,
+                book_read_manual=book_read_manual
             )
             
-            messages.success(request, f'Kunjungan untuk {name} tercatat! Buku: {visit.book.title if visit.book else visit.book_read_manual}.')
+            book_title = visit.book.title if visit.book else visit.book_read_manual
+            messages.success(request, f'Kunjungan untuk {name} berhasil dicatat! Buku: {book_title}')
             return redirect('home')
         else:
             messages.error(request, 'Mohon isi form dengan benar.')
     else:
         form = VisitRecordForm()
+    
     return render(request, 'library/record_visit.html', {'form': form})
-
+    
 def history_check(request):
     visits = None
     borrowings = None
