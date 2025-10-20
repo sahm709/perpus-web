@@ -45,15 +45,16 @@
         <!-- Input search untuk filter -->
         <input type="text" id="book-search-input" class="form-control" placeholder="Cari buku..." autocomplete="off">
         
-        <!-- Container dropdown (hidden by default) -->
-        <div id="book-dropdown" class="dropdown-menu w-100" style="display: none; max-height: 200px; overflow-y: auto;">
-            {% for book in form.book.field.queryset %}
-                <a class="dropdown-item book-option" href="#" data-id="{{ book.id }}" data-title="{{ book.title }}">
-                    {{ book.title }}  <!-- Asumsikan field 'title'; ganti jika field berbeda, e.g., book.name -->
-                </a>
-            {% empty %}
-                <div class="dropdown-item disabled">Tidak ada buku di katalog.</div>
-            {% endfor %}
+        <div style="position: relative;">
+            <div id="book-dropdown" class="dropdown-menu w-100" style="display: none; max-height: 200px; overflow-y: auto; width: 100%; position: absolute; z-index: 1000;">
+                {% for book in form.book.field.queryset %}
+                    <a class="dropdown-item book-option" href="#" data-id="{{ book.id }}" data-title="{{ book.title }}">
+                        {{ book.title }}  <!-- Asumsikan field 'title'; ganti jika field berbeda, e.g., book.name -->
+                    </a>
+                {% empty %}
+                    <div class="dropdown-item disabled">Tidak ada buku di katalog.</div>
+                {% endfor %}
+            </div>
         </div>
         
         {% if form.book.errors %}
@@ -119,6 +120,8 @@ $(document).ready(function() {
     
     // Fungsi filter
     function filterOptions(query) {
+        $('.temp-no-results').remove();
+
         let hasResults = false;
         $options.each(function() {
             const title = $(this).data('title').toLowerCase();
@@ -132,8 +135,6 @@ $(document).ready(function() {
         // Jika tidak ada hasil, tampilkan pesan
         if (!hasResults && query !== '') {
             $dropdown.append('<div class="dropdown-item disabled temp-no-results">Tidak ada buku ditemukan.</div>');
-        } else {
-            $('.temp-no-results').remove();
         }
     }
     

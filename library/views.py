@@ -6,6 +6,49 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import Book, Student, Visit, Borrowing, BookRequest
 from .forms import VisitRecordForm, HistoryCheckForm, BorrowRequestForm, ReturnRequestForm, BookRequestForm  
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+
+@require_http_methods(["GET"])
+def book_search_api(request):
+    search_term = request.GET.get('q', '').strip()
+    page = int(request.GET.get('page', 1))
+    page_size = 30  # Load 30 items per request
+    
+    # Filter books berdasarkan search term
+    if search_term:
+        books = Book.objects.filter(
+            Q(title__icontains=search_term) | 
+            Q(author__icontains=search_term)
+        ).order_by('title')
+    else:
+        books = Book.objects.all().order_by('title')
+    
+    # Hitung total dan pagination
+    total_count = books.count()
+    start = (page - 1) * page_size
+    end = start + page_size
+    
+    books_page = books[start:end]
+    
+    # Format response untuk Select2
+    results = [
+        {
+            'id': book.id,
+            'text': book.title,  # Yang ditampilkan di dropdown
+        }
+        for book in books_page
+    ]
+    
+    # Check apakah masih ada data berikutnya
+    has_more = end < total_count
+    
+    return JsonResponse({
+        'results': results,
+        'pagination': {
+            'more': has_more
+        }
+    })
 
 def home(request):
     new_books = Book.objects.filter(is_available=True).order_by('-added_date')[:5]
