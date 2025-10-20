@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import Book, Student, Visit, Borrowing  
+from .models import Book, Student, Visit, Borrowing, BookRequest
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ['title', 'author', 'is_available', 'added_date']
-    list_filter = ['is_available', 'added_date', 'is_recommended']
-    search_fields = ['title', 'author']
+    list_display = ['title', 'author', 'is_available', 'is_recommended', 'added_date'] 
+    list_filter = ['is_available', 'is_recommended']  
+    ordering = ['-is_recommended', 'title']   
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
@@ -21,6 +21,11 @@ class VisitAdmin(admin.ModelAdmin):
 
 @admin.register(Borrowing)
 class BorrowingAdmin(admin.ModelAdmin):
-    list_display = ['student', 'book', 'book_manual', 'status', 'borrow_date']
+    list_display = ['student', 'book', 'book_manual', 'borrow_date', 'status']
     list_filter = ['status', 'borrow_date']
-    search_fields = ['student__name', 'book__title', 'book_manual']
+
+@admin.register(BookRequest)
+class BookRequestAdmin(admin.ModelAdmin):
+    list_display = ['request_type', 'student_name', 'class_name', 'parent_name', 'child_name', 'child_class', 'book_title_or_type', 'submitted_at']
+    list_filter = ['request_type', 'submitted_at']
+    search_fields = ['student_name', 'parent_name', 'child_name', 'book_title_or_type']

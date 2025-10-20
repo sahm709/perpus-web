@@ -10,7 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from environ import Env 
+env = Env()
+Env.read_env()
+ENVIRONMENT = env('ENVIRONMENT', default='production')
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +27,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1w3-g#+b^7!a+3upgu%q^qoq@mw#n($evj!&1y*=-2l%ku7kq*'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == 'development':
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'perpus-web-production.up.railway.app']
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',  
+    'https://perpus-web-production.up.railway.app',  
+]
 
 # Application definition
 
@@ -48,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']  
@@ -71,7 +86,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'perpus_web.wsgi.app'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -82,6 +96,32 @@ DATABASES = {
     }
 }
 
+POSTGRES_LOCALLY = False
+if ENVIRONMENT == 'production' or POSTGRES_LOCALLY == True:
+    DATABASES['default'] = dj_database_url.parse(env('DB_URL'))
+
+'''
+DB_LIVE = os.environ.get("DB_LIVE")
+
+if DB_LIVE in ["False", False]:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get("DB_NAME"),
+            'USER': os.environ.get("DB_USER"),
+            'PASSWORD': os.environ.get("DB_PASSWORD"),
+            'HOST': os.environ.get("DB_HOST"),
+            'PORT': os.environ.get("DB_PORT"),
+        }
+    }
+'''
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -117,7 +157,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATIC_URL = 'static/'
+
+STATICSTORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

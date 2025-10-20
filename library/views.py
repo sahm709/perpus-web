@@ -4,21 +4,24 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from .models import Book, Student, Visit, Borrowing
-from .forms import VisitRecordForm, HistoryCheckForm, BorrowRequestForm, ReturnRequestForm  # Asumsikan ReturnRequestForm dibuat
+from .models import Book, Student, Visit, Borrowing, BookRequest
+from .forms import VisitRecordForm, HistoryCheckForm, BorrowRequestForm, ReturnRequestForm, BookRequestForm  
 
 def home(request):
     new_books = Book.objects.filter(is_available=True).order_by('-added_date')[:5]
-    available_books = Book.objects.filter(is_available=True)
+    available_books = Book.objects.filter(is_available=True).order_by('-is_recommended', 'title')
     return render(request, 'library/home.html', {'new_books': new_books, 'available_books': available_books})
 
 def catalog_search(request):
     query = request.GET.get('q', '')
-    books = Book.objects.all()
+    books = Book.objects.filter()  # Opsional: Hanya tampilkan buku yang tersedia (sesuai dengan home view)
     if query:
         books = books.filter(Q(title__icontains=query) | Q(author__icontains=query))
-    books = books.order_by('-is_recommended', '-added_date')  # -is_recommended: True dulu
+    
+    books = books.order_by('-is_recommended', 'title')
+    
     return render(request, 'library/catalog.html', {'books': books, 'query': query})
+
 
 def record_visit(request):
     if request.method == 'POST':
@@ -141,3 +144,29 @@ def verify_return(request, borrowing_id):
         messages.success(request, 'Pengembalian disetujui!')
         return redirect('admin_dashboard')
     return render(request, 'library/verify_return.html', {'borrowing': borrowing})
+# views.py
+
+def book_request(request):
+    if request.method == 'POST':
+        form = BookRequestForm(request.POST)
+        if form.is_valid():
+            # Validasi manual berdasarkan request_type
+            request_type = form.cleaned_data['request_type']
+            if request_type == 'student':
+                if not form.cleaned_data['student_name'] or not form.cleaned_data['class_name']:
+                    messages.error(request, "Nama murid dan kelas wajib diisi untuk request murid.")
+                    return render(request, 'library/book_request.html', {'form': form, 'all_requests': BookRequest.objects.all().order_by('-submitted_at')})
+            elif request_type == 'parent':
+                if not form.cleaned_data['parent_name'] or not form.cleaned_data['child_name'] or not form.cleaned_data['child_class']:
+                    messages.error(request, "Nama orang tua, nama anak, dan kelas anak wajib diisi untuk request orang tua.")
+                    return render(request, 'library/book_request.html', {'form': form, 'all_requests': BookRequest.objects.all().order_by('-submitted_at')})
+            
+            form.save()
+            messages.success(request, "Request buku berhasil dikirim!")
+            return redirect('book_request')  # Redirect ke halaman yang sama untuk refresh tabel
+    else:
+        form = BookRequestForm()
+    
+    # Kirim semua request untuk ditampilkan di tabel
+    all_requests = BookRequest.objects.all().order_by('-submitted_at')  # Urutkan berdasarkan waktu terbaru
+    return render(request, 'library/book_request.html', {'form': form, 'all_requests': all_requests})
