@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1>Dashboard Admin</h1>
+
 <h2>Peminjaman Pending</h2>
 {% if pending_borrowings %}
 <table class="table table-striped">
@@ -19,7 +20,9 @@
             <td>{{ borrowing.student.name }}</td>
             <td>{{ borrowing.book.title|default:borrowing.book_manual }}</td>
             <td>{{ borrowing.borrow_date }}</td>
-        <a href="{% url 'verify_borrowing' borrowing.id %}" class="btn btn-primary">Verifikasi Peminjaman</a>
+            <td>
+                <a href="{% url 'verify_borrowing' borrowing.id %}" class="btn btn-primary">Verifikasi Peminjaman</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -39,20 +42,25 @@
             <th>Aksi</th>
         </tr>
     </thead>
-    </table>
+    <tbody>
         {% for borrowing in pending_returns %}
-    <div>
-        <p>{{ borrowing.student.name }} - {{ borrowing.book.title|default:borrowing.book_manual }} - Status: {{ borrowing.status }}</p>
-        {% if borrowing.id and borrowing.status == 'pending_return' %}
-            <a href="{% url 'verify_return' borrowing.id %}" class="btn btn-warning">Verifikasi Pengembalian</a>
-        {% elif borrowing.id %}
-            <p class="text-info">Borrowing ini sudah tidak bisa diverifikasi (status: {{ borrowing.status }})</p>
-        {% else %}
-            <p class="text-danger">ID tidak tersedia untuk verifikasi.</p>
-        {% endif %}
-    </div>
-{% endfor %}
-
+        <tr>
+            <td>{{ borrowing.student.name }}</td>
+            <td>{{ borrowing.book.title|default:borrowing.book_manual }}</td>
+            <td>{{ borrowing.borrow_date }}</td>
+            <td>
+                {% if borrowing.id and borrowing.status == 'pending_return' %}
+                    <a href="{% url 'verify_return' borrowing.id %}" class="btn btn-warning">Verifikasi Pengembalian</a>
+                {% elif borrowing.id %}
+                    <p class="text-info">Borrowing ini sudah tidak bisa diverifikasi (status: {{ borrowing.status }})</p>
+                {% else %}
+                    <p class="text-danger">ID tidak tersedia untuk verifikasi.</p>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% else %}
 <p>Tidak ada pengembalian pending.</p>
 {% endif %}

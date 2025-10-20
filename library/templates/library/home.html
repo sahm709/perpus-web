@@ -1,7 +1,7 @@
 {% extends 'library/base.html' %}
 
 {% block content %}
-<h1>Selamat Datang di Perpustakaan Digital</h1>
+<h1>Selamat Datang di Perpustakaan SDN Johar Baru 03</h1>
 <p>Pilih fitur di bawah ini untuk memulai.</p>
 
 <div class="row mt-4">
@@ -37,8 +37,8 @@
         </div>
     </div>
 
-    <!-- Baris 2: 2 kotak -->
-    <div class="col-md-6 mb-3">
+    <!-- Baris 2: 3 kotak (diubah dari 2 menjadi 3 untuk menambahkan book_request) -->
+    <div class="col-md-4 mb-3">
         <div class="card text-center">
             <div class="card-body">
                 <i class="bi bi-download fs-1"></i>  <!-- Ikon pinjam -->
@@ -48,13 +48,24 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6 mb-3">
+    <div class="col-md-4 mb-3">
         <div class="card text-center">
             <div class="card-body">
                 <i class="bi bi-upload fs-1"></i>  <!-- Ikon kembalikan -->
                 <h5 class="card-title">Ajukan Pengembalian</h5>
                 <p class="card-text">Ajukan pengembalian buku yang dipinjam.</p>
                 <a href="{% url 'return_request' %}" class="btn btn-primary">Kunjungi</a>
+            </div>
+        </div>
+    </div>
+    <!-- Kotak baru untuk book_request -->
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-plus-circle fs-1"></i>  <!-- Ikon plus untuk request -->
+                <h5 class="card-title">Request Buku Baru</h5>
+                <p class="card-text">Ajukan request untuk buku baru yang diinginkan.</p>
+                <a href="{% url 'book_request' %}" class="btn btn-primary">Kunjungi</a>
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-// {% extends 'library/base.html' %}
+{% extends 'library/base.html' %}
 
 {% block content %}
 <h1>Ajukan Pengembalian Buku</h1>
@@ -36,9 +36,26 @@
             <div class="text-danger">{{ form.grade.errors }}</div>
         {% endif %}
     </div>
-    <div class="mb-3">
-        <label for="{{ form.book.id_for_label }}" class="form-label">{{ form.book.label }}</label>
-        {{ form.book }}
+     <div class="mb-3">
+        <label for="book-search-input" class="form-label">{{ form.book.label }}</label>
+        
+        <!-- Hidden input untuk menyimpan nilai pilihan (ID buku), agar kompatibel dengan form Django -->
+        <input type="hidden" name="book" id="book-hidden" value="{{ form.book.value }}">
+        
+        <!-- Input search untuk filter -->
+        <input type="text" id="book-search-input" class="form-control" placeholder="Cari buku..." autocomplete="off">
+        
+        <!-- Container dropdown (hidden by default) -->
+        <div id="book-dropdown" class="dropdown-menu w-100" style="display: none; max-height: 200px; overflow-y: auto;">
+            {% for book in form.book.field.queryset %}
+                <a class="dropdown-item book-option" href="#" data-id="{{ book.id }}" data-title="{{ book.title }}">
+                    {{ book.title }}  <!-- Asumsikan field 'title'; ganti jika field berbeda, e.g., book.name -->
+                </a>
+            {% empty %}
+                <div class="dropdown-item disabled">Tidak ada buku di katalog.</div>
+            {% endfor %}
+        </div>
+        
         {% if form.book.errors %}
             <div class="text-danger">{{ form.book.errors }}</div>
         {% endif %}
@@ -58,4 +75,75 @@
 <div class="mt-4">
     <p><strong>Contoh:</strong> Nama: Andi Susanto, Kelas: X IPA 1, Pilih Buku: (dari dropdown) atau Tulis Manual: "Buku yang Dipinjam".</p>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    const $searchInput = $('#book-search-input');
+    const $dropdown = $('#book-dropdown');
+    const $options = $('.book-option');
+    const $hiddenInput = $('#book-hidden');
+    
+    // Toggle dropdown saat klik input
+    $searchInput.on('click', function() {
+        $dropdown.toggle();
+        filterOptions('');  // Tampilkan semua saat buka
+    });
+    
+    // Filter options saat ketik
+    $searchInput.on('input', function() {
+        const query = $(this).val().toLowerCase();
+        filterOptions(query);
+        $dropdown.show();  // Pastikan dropdown terbuka saat ketik
+    });
+    
+    // Pilih opsi
+    $options.on('click', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        const title = $(this).data('title');
+        $searchInput.val(title);  // Set input ke judul yang dipilih
+        $hiddenInput.val(id);     // Set hidden input ke ID
+        $dropdown.hide();         // Tutup dropdown
+    });
+    
+    // Klik di luar untuk tutup dropdown
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#book-search-input, #book-dropdown').length) {
+            $dropdown.hide();
+        }
+    });
+    
+    // Fungsi filter
+    function filterOptions(query) {
+        let hasResults = false;
+        $options.each(function() {
+            const title = $(this).data('title').toLowerCase();
+            if (title.includes(query)) {
+                $(this).show();
+                hasResults = true;
+            } else {
+                $(this).hide();
+            }
+        });
+        // Jika tidak ada hasil, tampilkan pesan
+        if (!hasResults && query !== '') {
+            $dropdown.append('<div class="dropdown-item disabled temp-no-results">Tidak ada buku ditemukan.</div>');
+        } else {
+            $('.temp-no-results').remove();
+        }
+    }
+    
+    // Set initial value jika ada (dari form.book.value)
+    const initialValue = '{{ form.book.value }}';
+    if (initialValue) {
+        const $selectedOption = $options.filter(`[data-id="${initialValue}"]`);
+        if ($selectedOption.length) {
+            $searchInput.val($selectedOption.data('title'));
+            $hiddenInput.val(initialValue);
+        }
+    }
+});
+</script>
 {% endblock %}

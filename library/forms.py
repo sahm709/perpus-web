@@ -45,7 +45,7 @@ class BorrowRequestForm(forms.Form):
 class ReturnRequestForm(forms.Form):
     name = forms.CharField(max_length=100, label='Nama Siswa', required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
     grade = forms.CharField(max_length=20, label='Kelas', required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    borrowing_id = forms.IntegerField(label='ID Peminjaman', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    book = forms.ModelChoiceField(queryset=Book.objects.all(), required=False, label='Pilih Buku dari Katalog', empty_label='-- Pilih Buku --', widget=forms.Select(attrs={'class': 'form-select'}))
     book_manual = forms.CharField(max_length=200, label='Atau Tulis Buku Manual', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 class BookRequestForm(forms.ModelForm):

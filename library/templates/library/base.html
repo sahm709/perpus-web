@@ -2,10 +2,11 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Perpustakaan Digital</title>
+    <title>Perpustakaan SDN JB 03</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <!-- Select2 CSS (jika digunakan di halaman lain) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -24,6 +25,7 @@
                     <a class="nav-link" href="{% url 'history_check' %}">Riwayat Kunjungan</a>
                     <a class="nav-link" href="{% url 'borrow_request' %}">Ajukan Peminjaman</a>
                     <a class="nav-link" href="{% url 'return_request' %}">Ajukan Pengembalian</a>
+                    <a class="nav-link" href="{% url 'book_request' %}">Request Buku</a>
                 </div>
             </div>
         </div>
@@ -39,5 +41,22 @@
         {% block content %}
         {% endblock %}
     </div>
+
+    <!-- JS: Urutan yang benar -->
+    <!-- 1. jQuery (diperlukan untuk Select2 dan script custom) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 2. Bootstrap JS (untuk komponen Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <!-- 3. Select2 JS (jika digunakan di halaman lain) -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- 4. Inisialisasi Select2 (opsional, jika perlu custom) -->
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2();  // Inisialisasi untuk semua elemen dengan class 'select2'
+        });
+    </script>
+    <!-- Block untuk script halaman-spesifik (dimuat setelah jQuery) -->
+    {% block extra_js %}
+    {% endblock %}
 </body>
 </html>
