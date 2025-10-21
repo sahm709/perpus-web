@@ -90,6 +90,8 @@ $(document).ready(function() {
     
     // Fungsi filter
     function filterOptions(query) {
+        $('.temp-no-results').remove();
+
         let hasResults = false;
         $options.each(function() {
             const title = $(this).data('title').toLowerCase();
@@ -103,8 +105,6 @@ $(document).ready(function() {
         // Jika tidak ada hasil, tampilkan pesan
         if (!hasResults && query !== '') {
             $dropdown.append('<div class="dropdown-item disabled temp-no-results">Tidak ada buku ditemukan.</div>');
-        } else {
-            $('.temp-no-results').remove();
         }
     }
     
